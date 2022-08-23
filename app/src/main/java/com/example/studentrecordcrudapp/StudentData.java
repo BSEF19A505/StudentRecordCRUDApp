@@ -21,6 +21,11 @@ public class StudentData {
         this.rollNmber = rollNmber;
         this.isEnroll = isEnroll;
     }
+    public StudentData(String name, int rollNmber) {
+        this.name = name;
+        this.rollNmber = rollNmber;
+
+    }
 
     public String getName() {
         return name;

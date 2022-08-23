@@ -75,4 +75,18 @@ public class DBHelper extends SQLiteOpenHelper {
         cursorCourses.close();
         return studentArrayList;
     }
+
+    public int updateStudent(int rollno, StudentData student) {
+        SQLiteDatabase db= this.getWritableDatabase();
+        ContentValues cv=new ContentValues();
+        if(student.getName().length()!=0){
+            cv.put("Student_name", student.getName());
+        }
+        if(student.getRollNmber()<=0) {
+            cv.put("Student_age", student.getRollNmber());
+        }
+
+        int result= db.update("STUDENTS",cv,"Student_rollno=?",new String[]{String.valueOf(rollno)});
+        return result;
+    }
 }

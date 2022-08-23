@@ -15,6 +15,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Button buttonAdd, buttonViewAll;
+    Button updateBtn;
+    Button deleteBtn;
     EditText editName, editRollNumber;
     Switch switchIsActive;
     ListView listViewStudent;

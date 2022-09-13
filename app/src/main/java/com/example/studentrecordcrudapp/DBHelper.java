@@ -5,6 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import java.lang.String;
 
 import java.util.ArrayList;
 
@@ -17,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public DBHelper(Context context) {
+    public DBHelper(@Nullable Context context) {
         super(context, "MyDB.db", null, 1);
     }
 
@@ -37,14 +42,14 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void  addStudent(StudentData STUDENTdata){
+    public void  addStudent(StudentModel STUDENTModel){
         SQLiteDatabase db = this.getWritableDatabase();
         //Hash map, as we did in bundles
         ContentValues cv = new ContentValues();
 
-        cv.put(STUDENT_NAME, STUDENTdata.getName());
-        cv.put(STUDENT_ROLL, STUDENTdata.getRollNmber());
-        cv.put(STUDENT_ENROLL, STUDENTdata.isEnroll());
+        cv.put(STUDENT_NAME, STUDENTModel.getName());
+        cv.put(STUDENT_ROLL, STUDENTModel.getRollNmber());
+        cv.put(STUDENT_ENROLL, STUDENTModel.isEnroll());
         db.insert(STUDENT_TABLE, null, cv);
         db.close();
         //NullCoumnHack
@@ -53,20 +58,20 @@ public class DBHelper extends SQLiteOpenHelper {
         //else{return true;}
     }
 
-    public ArrayList<StudentData> getAllStudents() {
+    public ArrayList<StudentModel> getAllStudents() {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursorCourses = db.rawQuery("SELECT * FROM " + STUDENT_TABLE, null);
 
-        ArrayList<StudentData> studentArrayList = new ArrayList<>();
+        ArrayList<StudentModel> studentArrayList = new ArrayList<>();
 
         // moving our cursor to first position.
         if (cursorCourses.moveToFirst()) {
             do {
 
-                studentArrayList.add(new StudentData(cursorCourses.getString(1),
-                        cursorCourses.getInt(2),
+                studentArrayList.add(new StudentModel(cursorCourses.getInt(0), cursorCourses.getString(1),
+                        cursorCourses.getString(2),
                         cursorCourses.getInt(3) == 1 ? true : false));
             } while (cursorCourses.moveToNext());
 
@@ -75,18 +80,23 @@ public class DBHelper extends SQLiteOpenHelper {
         cursorCourses.close();
         return studentArrayList;
     }
-
-    public int updateStudent(int rollno, StudentData student) {
-        SQLiteDatabase db= this.getWritableDatabase();
-        ContentValues cv=new ContentValues();
-        if(student.getName().length()!=0){
-            cv.put("Student_name", student.getName());
-        }
-        if(student.getRollNmber()<=0) {
-            cv.put("Student_age", student.getRollNmber());
-        }
-
-        int result= db.update("STUDENTS",cv,"Student_rollno=?",new String[]{String.valueOf(rollno)});
-        return result;
+    public void deleteStudent(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(STUDENT_TABLE,"StudentID = "+id,null);
+        db.close();
     }
+    public void updateStudent(String name,String rollNumber,boolean isEnroll,int id){
+        int enroll=0;
+        if(isEnroll==true)
+            enroll = 1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("StudentName",name);
+        contentValues.put("StudentRollNumber",rollNumber);
+        contentValues.put("IsEnrolled",enroll);
+        db.update(STUDENT_TABLE,contentValues,STUDENT_ID+"="+id,null);
+        Log.d("tag=====", "updateStudent: "+name+" "+rollNumber+" "+enroll);
+        db.close();
+    }
+
 }
